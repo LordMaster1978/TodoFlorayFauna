@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UploadCloud, Search, Loader2, AlertCircle, MapPin } from "lucide-react";
+import { UploadCloud, Search, Loader2, AlertCircle, MapPin, Camera, RefreshCcw } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import { SpeciesCard } from "./species-card";
 import { FavoritesSheet } from "./favorites-sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 
 type Favorites = {
   data: IdentifySpeciesFromImageOutput;
@@ -28,8 +30,12 @@ export function SpeciesIdentifier() {
   const [favorites, setFavorites] = useState<IdentifySpeciesFromImageOutput[]>([]);
   const [favoriteImages, setFavoriteImages] = useState<Record<string, string>>({});
   const [isDragOver, setIsDragOver] = useState(false);
+  const [activeTab, setActiveTab] = useState("file");
+  const [hasCameraPermission, setHasCameraPermission] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -55,6 +61,45 @@ export function SpeciesIdentifier() {
       console.error("Failed to save favorites to localStorage", e);
     }
   }, [favorites, favoriteImages]);
+
+  const stopCamera = useCallback(() => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'camera') {
+      const getCameraPermission = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          setHasCameraPermission(true);
+  
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        } catch (error) {
+          console.error('Error accessing camera:', error);
+          setHasCameraPermission(false);
+          toast({
+            variant: 'destructive',
+            title: 'Acceso a la cámara denegado',
+            description: 'Por favor, habilita los permisos de la cámara en la configuración de tu navegador para usar esta aplicación.',
+          });
+          setActiveTab('file'); // Fallback to file upload
+        }
+      };
+      getCameraPermission();
+    } else {
+      stopCamera();
+    }
+    // Cleanup on unmount
+    return () => {
+      stopCamera();
+    };
+  }, [activeTab, toast, stopCamera]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -82,6 +127,24 @@ export function SpeciesIdentifier() {
         setError(null);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCapture = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext("2d");
+      if (context) {
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL("image/jpeg");
+        setImage(dataUrl);
+        setResult(null);
+        setError(null);
+        setActiveTab("file"); // Switch back to see the preview
+      }
     }
   };
 
@@ -145,53 +208,101 @@ export function SpeciesIdentifier() {
   return (
     <div className="space-y-8">
       <Card className="w-full max-w-2xl mx-auto shadow-lg">
-        <CardContent
-          className={`p-6 border-2 border-dashed rounded-lg transition-colors ${
-            isDragOver ? 'border-primary bg-primary/10' : 'border-muted-foreground/30'
-          }`}
-          onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-          onDragLeave={() => setIsDragOver(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setIsDragOver(false);
-            handleFileChange(e.dataTransfer.files);
-          }}
-        >
-          <div className="flex flex-col md:flex-row items-center gap-6">
-            <div className="flex-1 w-full text-center md:text-left">
-              <div className="flex flex-col items-center justify-center cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                <UploadCloud className="h-12 w-12 text-muted-foreground" />
-                <p className="mt-2 font-semibold">Arrastra una imagen o haz clic para subir</p>
-                <p className="text-sm text-muted-foreground">PNG, JPG, WEBP hasta 10MB</p>
+      <Tabs value={activeTab} onValueChange={(value) => {
+        setImage(null);
+        setResult(null);
+        setError(null);
+        setActiveTab(value);
+      }} className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="file">
+            <UploadCloud className="mr-2 h-4 w-4" />
+            Subir archivo
+          </TabsTrigger>
+          <TabsTrigger value="camera">
+            <Camera className="mr-2 h-4 w-4" />
+            Usar cámara
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="file">
+          <CardContent
+            className={`p-6 border-2 border-dashed rounded-b-lg transition-colors ${
+              isDragOver ? 'border-primary bg-primary/10' : 'border-muted-foreground/30'
+            }`}
+            onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+            onDragLeave={() => setIsDragOver(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDragOver(false);
+              handleFileChange(e.dataTransfer.files);
+            }}
+          >
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="flex-1 w-full text-center md:text-left">
+                <div className="flex flex-col items-center justify-center cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                  <UploadCloud className="h-12 w-12 text-muted-foreground" />
+                  <p className="mt-2 font-semibold">Arrastra una imagen o haz clic para subir</p>
+                  <p className="text-sm text-muted-foreground">PNG, JPG, WEBP hasta 10MB</p>
+                </div>
+                <Input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/png, image/jpeg, image/webp"
+                  onChange={(e) => handleFileChange(e.target.files)}
+                />
               </div>
-              <Input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                accept="image/png, image/jpeg, image/webp"
-                onChange={(e) => handleFileChange(e.target.files)}
-              />
+              {image && (
+                <div className="relative w-48 h-48 rounded-md overflow-hidden border shadow-sm">
+                  <Image src={image} alt="Vista previa" fill className="object-cover" />
+                </div>
+              )}
             </div>
-            {image && (
-              <div className="relative w-48 h-48 rounded-md overflow-hidden border shadow-sm">
-                <Image src={image} alt="Vista previa" fill className="object-cover" />
-              </div>
+            {locationError && (
+                <div className="mt-4 text-xs text-destructive flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4" />
+                  {locationError}
+                </div>
+              )}
+              {location && !locationError && (
+                <div className="mt-4 text-xs text-muted-foreground flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  Ubicación activada para mayor precisión.
+                </div>
+              )}
+          </CardContent>
+        </TabsContent>
+        <TabsContent value="camera">
+          <CardContent className="p-6 rounded-b-lg">
+            <div className="relative w-full aspect-video rounded-md overflow-hidden bg-black flex items-center justify-center">
+              <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+              {!hasCameraPermission && (
+                <div className="absolute text-center text-white p-4">
+                  <Camera className="h-12 w-12 mx-auto mb-2"/>
+                  <p>Esperando permiso de la cámara...</p>
+                </div>
+              )}
+            </div>
+            <canvas ref={canvasRef} className="hidden" />
+            {hasCameraPermission && (
+              <Button onClick={handleCapture} className="w-full mt-4">
+                <Camera className="mr-2 h-4 w-4" />
+                Capturar Foto
+              </Button>
             )}
-          </div>
-          {locationError && (
-              <div className="mt-4 text-xs text-destructive flex items-center gap-2">
+            {!hasCameraPermission && (
+              <Alert variant="destructive" className="mt-4">
                 <AlertCircle className="h-4 w-4" />
-                {locationError}
-              </div>
+                <AlertTitle>Se requiere acceso a la cámara</AlertTitle>
+                <AlertDescription>
+                  Por favor, permite el acceso a la cámara para usar esta función.
+                </AlertDescription>
+              </Alert>
             )}
-            {location && !locationError && (
-              <div className="mt-4 text-xs text-muted-foreground flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-primary" />
-                Ubicación activada para mayor precisión.
-              </div>
-            )}
-        </CardContent>
-        <CardFooter className="flex flex-col md:flex-row gap-4 p-6 bg-muted/30">
+          </CardContent>
+        </TabsContent>
+      </Tabs>
+        <CardFooter className="flex flex-col md:flex-row gap-4 p-6 bg-muted/30 rounded-b-lg">
           <Button onClick={handleIdentify} disabled={!image || loading} className="w-full md:w-auto flex-grow bg-primary hover:bg-primary/90">
             {loading ? (
               <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Identificando...</>
@@ -247,3 +358,5 @@ export function SpeciesIdentifier() {
     </div>
   );
 }
+
+    
