@@ -23,14 +23,14 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
         <div className="space-y-1.5">
           <CardTitle className="font-headline text-3xl">{species.speciesName}</CardTitle>
           <CardDescription>
-            Confianza de identificación: <Badge variant={species.confidence > 0.7 ? "default" : "secondary"} className="bg-primary/80 text-primary-foreground">{confidencePercentage}%</Badge>
+            Confianza: <Badge variant={species.confidence > 0.7 ? "default" : "secondary"} className="bg-primary/80 text-primary-foreground">{confidencePercentage}%</Badge>
           </CardDescription>
         </div>
         <Button
           variant="ghost"
           size="icon"
           onClick={onToggleFavorite}
-          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          aria-label={isFavorite ? "Quitar de favoritos" : "Añadir a favoritos"}
           className="h-10 w-10"
         >
           <Star className={`h-6 w-6 transition-all duration-300 ${isFavorite ? "fill-accent text-accent" : "text-muted-foreground"}`} />
@@ -40,7 +40,7 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
         <div className="relative aspect-video w-full rounded-lg overflow-hidden border">
           <Image
             src={image}
-            alt={`Image of ${species.speciesName}`}
+            alt={`Imagen de ${species.speciesName}`}
             fill
             className="object-cover"
           />

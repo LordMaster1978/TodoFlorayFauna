@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { identifySpeciesFromImage, type IdentifySpeciesFromImageOutput } from "@/ai/flows/identify-species-from-image";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -158,11 +158,11 @@ export function SpeciesIdentifier() {
     try {
       const result = await identifySpeciesFromImage({
         photoDataUri: image,
-        location: location || "Unknown",
+        location: location || "Desconocida",
       });
       setResult(result);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
+      const errorMessage = err instanceof Error ? err.message : "Ocurrió un error desconocido.";
       setError(errorMessage);
       toast({
         variant: "destructive",
@@ -358,5 +358,3 @@ export function SpeciesIdentifier() {
     </div>
   );
 }
-
-    

@@ -1,4 +1,6 @@
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet";
+"use client";
+
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Star, X } from "lucide-react";
 import type { IdentifySpeciesFromImageOutput } from "@/ai/flows/identify-species-from-image";
@@ -53,7 +55,7 @@ export function FavoritesSheet({ favorites, onRemoveFavorite, onSelectFavorite, 
                       variant="ghost"
                       size="icon"
                       onClick={() => onRemoveFavorite(fav)}
-                      aria-label={`Remove ${fav.speciesName} from favorites`}
+                      aria-label={`Quitar ${fav.speciesName} de favoritos`}
                       className="text-muted-foreground hover:text-destructive"
                     >
                       <X className="h-4 w-4" />
