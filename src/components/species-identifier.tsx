@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { identifySpeciesFromImage, type IdentifySpeciesFromImageOutput } from "@/ai/flows/identify-species-from-image";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UploadCloud, Search, Loader2, AlertCircle, MapPin, Camera, RefreshCcw } from "lucide-react";
+import { UploadCloud, Search, Loader2, AlertCircle, MapPin, Camera } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import { SpeciesCard } from "./species-card";
@@ -178,9 +178,9 @@ export function SpeciesIdentifier() {
     if (!species || !currentImage) return;
 
     setFavorites(prev => {
-      const isFav = prev.some(fav => fav.speciesName === species.speciesName);
+      const isFav = prev.some(fav => fav.scientificName === species.scientificName);
       if (isFav) {
-        return prev.filter(fav => fav.speciesName !== species.speciesName);
+        return prev.filter(fav => fav.scientificName !== species.scientificName);
       } else {
         return [...prev, species];
       }
@@ -188,11 +188,11 @@ export function SpeciesIdentifier() {
 
     setFavoriteImages(prev => {
       const newImages = { ...prev };
-      const isFav = Object.keys(newImages).includes(species.speciesName);
+      const isFav = Object.keys(newImages).includes(species.scientificName);
       if (isFav) {
-        delete newImages[species.speciesName];
+        delete newImages[species.scientificName];
       } else {
-        newImages[species.speciesName] = currentImage;
+        newImages[species.scientificName] = currentImage;
       }
       return newImages;
     });
@@ -203,7 +203,7 @@ export function SpeciesIdentifier() {
     setImage(favImage);
   }
 
-  const isCurrentResultFavorite = result ? favorites.some(fav => fav.speciesName === result.speciesName) : false;
+  const isCurrentResultFavorite = result ? favorites.some(fav => fav.scientificName === result.scientificName) : false;
 
   return (
     <div className="space-y-8">
@@ -312,7 +312,7 @@ export function SpeciesIdentifier() {
           </Button>
           <FavoritesSheet 
             favorites={favorites} 
-            onRemoveFavorite={(species) => toggleFavorite(species, favoriteImages[species.speciesName])}
+            onRemoveFavorite={(species) => toggleFavorite(species, favoriteImages[species.scientificName])}
             onSelectFavorite={selectFavorite}
             favoriteImages={favoriteImages}
           />

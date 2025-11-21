@@ -35,27 +35,30 @@ export function FavoritesSheet({ favorites, onRemoveFavorite, onSelectFavorite, 
             <ScrollArea className="h-full pr-4">
               <div className="space-y-4">
                 {favorites.map((fav) => (
-                  <div key={fav.speciesName} className="flex items-center justify-between p-2 rounded-lg border bg-card hover:bg-muted/50 transition-colors">
+                  <div key={fav.scientificName} className="flex items-center justify-between p-2 rounded-lg border bg-card hover:bg-muted/50 transition-colors">
                     <button 
                       className="flex items-center gap-4 flex-grow text-left"
-                      onClick={() => onSelectFavorite(fav, favoriteImages[fav.speciesName] || null)}
+                      onClick={() => onSelectFavorite(fav, favoriteImages[fav.scientificName] || null)}
                     >
-                      {favoriteImages[fav.speciesName] && (
+                      {favoriteImages[fav.scientificName] && (
                         <Image
-                          src={favoriteImages[fav.speciesName]}
-                          alt={fav.speciesName}
+                          src={favoriteImages[fav.scientificName]}
+                          alt={fav.commonName}
                           width={64}
                           height={64}
                           className="rounded-md object-cover h-16 w-16"
                         />
                       )}
-                      <span className="font-semibold text-card-foreground flex-grow">{fav.speciesName}</span>
+                      <div className="flex-grow">
+                        <p className="font-semibold text-card-foreground">{fav.commonName}</p>
+                        <p className="text-sm text-muted-foreground italic">{fav.scientificName}</p>
+                      </div>
                     </button>
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => onRemoveFavorite(fav)}
-                      aria-label={`Quitar ${fav.speciesName} de favoritos`}
+                      aria-label={`Quitar ${fav.commonName} de favoritos`}
                       className="text-muted-foreground hover:text-destructive"
                     >
                       <X className="h-4 w-4" />
