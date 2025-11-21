@@ -45,7 +45,7 @@ export default function Home() {
           
           <div className="relative z-10 container mx-auto px-4">
             <h1 className="text-4xl md:text-6xl font-headline font-bold text-primary mb-4">
-              NatureID
+              Todo Sobre Flora y Fauna
             </h1>
             <p className="text-lg md:text-xl text-foreground/80 mb-8 max-w-3xl mx-auto">
               Descubre el mundo natural que te rodea. Sube una foto para identificar plantas, animales y setas.
@@ -93,7 +93,7 @@ export default function Home() {
         </section>
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground border-t">
-        <p>&copy; {new Date().getFullYear()} NatureID. Creado con ❤️ para exploradores de la naturaleza.</p>
+        <p>&copy; {new Date().getFullYear()} Todo Sobre Flora y Fauna. Creado con ❤️ para exploradores de la naturaleza.</p>
       </footer>
     </div>
   );

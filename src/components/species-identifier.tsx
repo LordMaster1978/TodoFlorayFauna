@@ -40,8 +40,8 @@ export function SpeciesIdentifier() {
 
   useEffect(() => {
     try {
-      const storedFavorites = localStorage.getItem("natureid-favorites");
-      const storedImages = localStorage.getItem("natureid-favorite-images");
+      const storedFavorites = localStorage.getItem("florayfauna-favorites");
+      const storedImages = localStorage.getItem("florayfauna-favorite-images");
       if (storedFavorites) {
         setFavorites(JSON.parse(storedFavorites));
       }
@@ -55,8 +55,8 @@ export function SpeciesIdentifier() {
 
   useEffect(() => {
     try {
-      localStorage.setItem("natureid-favorites", JSON.stringify(favorites));
-      localStorage.setItem("natureid-favorite-images", JSON.stringify(favoriteImages));
+      localStorage.setItem("florayfauna-favorites", JSON.stringify(favorites));
+      localStorage.setItem("florayfauna-favorite-images", JSON.stringify(favoriteImages));
     } catch (e) {
       console.error("Failed to save favorites to localStorage", e);
     }

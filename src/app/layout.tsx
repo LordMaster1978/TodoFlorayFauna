@@ -4,7 +4,7 @@ import {Toaster} from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'NatureID',
+  title: 'Todo Sobre Flora y Fauna',
   description: 'Identifica plantas, animales y hongos a partir de imágenes.',
 };
 
