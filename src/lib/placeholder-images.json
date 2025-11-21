@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "hero-background",
-      "description": "A lush, green forest with sunlight filtering through the trees.",
-      "imageUrl": "https://images.unsplash.com/photo-1621288952933-69f4d548f89e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxmb3Jlc3QlMjBuYXR1cmV8ZW58MHx8fHwxNzYzNzY1MDQyfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "forest nature"
+      "description": "Un bosque frondoso y verde con la luz del sol filtrándose a través de los árboles.",
+      "imageUrl": "https://images.unsplash.com/photo-1448375240586-882707db888b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxmb3Jlc3R8ZW58MHx8fHwxNzE5NDI1MjQzfDA&ixlib=rb-4.0.3&q=80&w=1920",
+      "imageHint": "lush forest"
     }
   ]
 }
