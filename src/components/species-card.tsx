@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert, Dna, Recycle, Target, BookOpen, TreeDeciduous, Footprints, Map, Ruler } from "lucide-react";
+import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert, Dna, Recycle, Target, BookOpen, TreeDeciduous, Footprints, Map, Ruler, Sun, Droplets, Layers, Scissors } from "lucide-react";
 import type { IdentifySpeciesFromImageOutput } from "@/ai/flows/identify-species-from-image";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,6 +19,8 @@ import {
   ResponsiveContainer,
   XAxis,
   YAxis,
+  RadialBar,
+  RadialBarChart,
 } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
@@ -65,6 +67,10 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
     { label: "Tamaño", min: species.characteristics.size.minCm || 0, max: species.characteristics.size.maxCm || species.characteristics.size.minCm || 0 }
   ];
 
+  const sunlightChartData = species.plantCare ? [
+    { name: "Nivel de Luz", value: species.plantCare.sunlight, fill: "hsl(var(--primary))" },
+  ] : [];
+
   const chartConfig = {
     confidence: {
       label: "Confianza",
@@ -78,6 +84,10 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
       label: "Max (cm)",
       color: "hsl(var(--chart-1))",
     },
+    sunlight: {
+      label: "Nivel de Luz",
+      color: "hsl(var(--chart-1))",
+    }
   } satisfies ChartConfig;
 
 
@@ -107,9 +117,12 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
 
       <CardContent className="p-0">
         <Tabs defaultValue="info" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 rounded-none h-16 bg-muted/30">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 rounded-none h-16 bg-muted/30">
             <TabsTrigger value="info" className="h-full rounded-none text-xs sm:text-sm"><BookOpen className="h-5 w-5 mr-2 hidden sm:inline-block"/>General</TabsTrigger>
             <TabsTrigger value="biology" className="h-full rounded-none text-xs sm:text-sm"><Dna className="h-5 w-5 mr-2 hidden sm:inline-block"/>Biología</TabsTrigger>
+            {species.speciesType === 'plant' && (
+              <TabsTrigger value="care" className="h-full rounded-none text-xs sm:text-sm"><Sprout className="h-5 w-5 mr-2 hidden sm:inline-block"/>Cuidados</TabsTrigger>
+            )}
             <TabsTrigger value="eco" className="h-full rounded-none text-xs sm:text-sm"><TreeDeciduous className="h-5 w-5 mr-2 hidden sm:inline-block"/>Ecología</TabsTrigger>
             <TabsTrigger value="taxonomy" className="h-full rounded-none text-xs sm:text-sm"><Microscope className="h-5 w-5 mr-2 hidden sm:inline-block"/>Taxonomía</TabsTrigger>
             <TabsTrigger value="extra" className="h-full rounded-none text-xs sm:text-sm"><Sparkles className="h-5 w-5 mr-2 hidden sm:inline-block"/>Extras</TabsTrigger>
@@ -161,6 +174,69 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                      <p>{species.behaviorAndEcology}</p>
                   </Section>
                 </TabsContent>
+
+                {species.plantCare && (
+                  <TabsContent value="care" className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-8 items-start">
+                      <div className="space-y-6">
+                        <Section title="Riego" icon={<Droplets className="h-6 w-6"/>}>
+                          <p>{species.plantCare.watering}</p>
+                        </Section>
+                        <Section title="Suelo" icon={<Layers className="h-6 w-6" />}>
+                          <p>{species.plantCare.soil}</p>
+                        </Section>
+                        <Section title="Poda" icon={<Scissors className="h-6 w-6"/>}>
+                          <p>{species.plantCare.pruning}</p>
+                        </Section>
+                        <Section title="Fertilizante" icon={<Leaf className="h-6 w-6"/>}>
+                          <p>{species.plantCare.fertilizer}</p>
+                        </Section>
+                      </div>
+                      <div className="space-y-6">
+                        <Section title="Luz Solar" icon={<Sun className="h-6 w-6" />}>
+                          <p>{species.plantCare.sunlightDescription}</p>
+                          <div className="w-full h-40 mt-4">
+                            <ChartContainer
+                              config={chartConfig}
+                              className="w-full h-full"
+                            >
+                             <ResponsiveContainer>
+                                <RadialBarChart 
+                                  data={sunlightChartData} 
+                                  startAngle={-270} 
+                                  endAngle={90} 
+                                  innerRadius="70%" 
+                                  outerRadius="110%"
+                                >
+                                  <PolarGrid
+                                    gridType="circle"
+                                    radialLines={true}
+                                    stroke="none"
+                                    className="first:fill-muted last:fill-background"
+                                    polarRadius={[10, 20, 40, 70]}
+                                  />
+                                  <ChartTooltip
+                                    cursor={false}
+                                    content={<ChartTooltipContent hideLabel />}
+                                  />
+                                  <RadialBar 
+                                    dataKey="value" 
+                                    background 
+                                    cornerRadius={10} 
+                                    className="fill-primary"
+                                  />
+                                </RadialBarChart>
+                              </ResponsiveContainer>
+                            </ChartContainer>
+                          </div>
+                        </Section>
+                        <Section title="Humedad" icon={<Sparkles className="h-6 w-6"/>}>
+                          <p>{species.plantCare.humidity}</p>
+                        </Section>
+                      </div>
+                    </div>
+                  </TabsContent>
+                )}
 
                 <TabsContent value="taxonomy" className="space-y-6">
                   <Section title="Clasificación Taxonómica" icon={<Microscope className="h-6 w-6"/>}>
