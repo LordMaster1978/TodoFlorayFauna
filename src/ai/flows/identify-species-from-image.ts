@@ -101,7 +101,7 @@ const identifySpeciesPrompt = ai.definePrompt({
 **Instrucciones Clave:**
 1.  **Análisis Exhaustivo:** Analiza la imagen minuciosamente. Si se proporciona ubicación, úsala para acotar la identificación.
 2.  **Estructura Perfecta:** Debes rellenar TODOS los campos del esquema de salida. La información debe ser rigurosa, detallada, y estar perfectamente estructurada. No dejes campos vacíos a menos que sean opcionales y realmente no aplique (ej. 'dieta' para una roca).
-3.  **Datos Numéricos para Gráficos:** Para el tamaño (`size`), además de la descripción textual, proporciona los valores `minCm` y `maxCm` en centímetros. Si es un rango, proporciona ambos. Si es un tamaño aproximado, pon el mismo valor en ambos.
+3.  **Datos Numéricos para Gráficos:** Para el tamaño (\`size\`), además de la descripción textual, proporciona los valores \`minCm\` y \`maxCm\` en centímetros. Si es un rango, proporciona ambos. Si es un tamaño aproximado, pon el mismo valor en ambos.
 4.  **Confianza Detallada:** Además de la confianza general, proporciona una estimación de confianza para cada nivel taxonómico. Si estás muy seguro de que es un 'Animal' pero no tanto del 'Género', refléjalo en los valores de 'taxonomyConfidence'. La confianza a nivel de especie debe ser la misma que la confianza general.
 5.  **Rigor y Detalle:** Ve más allá de lo básico. En 'physicalDescription', no digas solo "es verde"; describe el tono, la textura, la forma de las hojas. En 'geographicDistribution', menciona continentes, países y ecorregiones. En 'lifeCycle', describe las etapas de desarrollo.
 6.  **Lenguaje Atractivo:** Usa un lenguaje que sea a la vez preciso y cautivador. El objetivo es educar y fascinar.
