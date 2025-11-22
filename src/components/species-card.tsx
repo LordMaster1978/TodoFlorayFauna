@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert, Dna, Recycle, Target } from "lucide-react";
+import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert, Dna, Recycle, Target, BookOpen, TreeDeciduous, Footprints } from "lucide-react";
 import type { IdentifySpeciesFromImageOutput } from "@/ai/flows/identify-species-from-image";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,11 +27,11 @@ type SpeciesCardProps = {
 
 const Section = ({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) => (
   <div className="space-y-3">
-    <h3 className="font-headline text-xl md:text-2xl font-bold text-primary flex items-center gap-2">
+    <h3 className="font-headline text-xl md:text-2xl font-bold text-primary flex items-center gap-3">
       {icon}
       {title}
     </h3>
-    <div className="text-foreground/80 whitespace-pre-wrap leading-relaxed prose prose-sm max-w-none">
+    <div className="text-foreground/80 whitespace-pre-wrap leading-relaxed prose prose-sm max-w-none prose-p:my-2 prose-ul:my-2">
       {children}
     </div>
   </div>
@@ -91,9 +91,9 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
       <CardContent className="p-0">
         <Tabs defaultValue="info" className="w-full">
           <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 rounded-none h-16 bg-muted/30">
-            <TabsTrigger value="info" className="h-full rounded-none text-xs sm:text-sm"><Info className="h-5 w-5 mr-2 hidden sm:inline-block"/>General</TabsTrigger>
+            <TabsTrigger value="info" className="h-full rounded-none text-xs sm:text-sm"><BookOpen className="h-5 w-5 mr-2 hidden sm:inline-block"/>General</TabsTrigger>
             <TabsTrigger value="biology" className="h-full rounded-none text-xs sm:text-sm"><Dna className="h-5 w-5 mr-2 hidden sm:inline-block"/>Biología</TabsTrigger>
-            <TabsTrigger value="eco" className="h-full rounded-none text-xs sm:text-sm"><Leaf className="h-5 w-5 mr-2 hidden sm:inline-block"/>Ecología</TabsTrigger>
+            <TabsTrigger value="eco" className="h-full rounded-none text-xs sm:text-sm"><TreeDeciduous className="h-5 w-5 mr-2 hidden sm:inline-block"/>Ecología</TabsTrigger>
             <TabsTrigger value="taxonomy" className="h-full rounded-none text-xs sm:text-sm"><Microscope className="h-5 w-5 mr-2 hidden sm:inline-block"/>Taxonomía</TabsTrigger>
             <TabsTrigger value="extra" className="h-full rounded-none text-xs sm:text-sm"><Sparkles className="h-5 w-5 mr-2 hidden sm:inline-block"/>Extras</TabsTrigger>
           </TabsList>
@@ -109,6 +109,9 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                     <Section title="Descripción Física" icon={<Sprout className="h-6 w-6"/>}>
                       {species.physicalDescription}
                     </Section>
+                     <Section title="Características Distintivas" icon={<Target className="h-6 w-6"/>}>
+                      {species.distinctiveFeatures}
+                    </Section>
                   </div>
                 </TabsContent>
 
@@ -117,8 +120,13 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                      <Section title="Ciclo de Vida" icon={<Recycle className="h-6 w-6"/>}>
                       {species.lifeCycle}
                     </Section>
-                    <Section title="Características Distintivas" icon={<Target className="h-6 w-6"/>}>
-                      {species.distinctiveFeatures}
+                     {species.characteristics.diet && (
+                       <Section title="Alimentación" icon={<Leaf className="h-6 w-6"/>}>
+                        <p>{species.characteristics.diet}</p>
+                      </Section>
+                    )}
+                     <Section title="Comportamiento" icon={<Footprints className="h-6 w-6"/>}>
+                       <p>{species.behaviorAndEcology}</p>
                     </Section>
                   </div>
                 </TabsContent>
@@ -126,7 +134,7 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                 <TabsContent value="taxonomy">
                     <div className="space-y-6">
                       <Section title="Clasificación Taxonómica" icon={<Microscope className="h-6 w-6"/>}>
-                        <ul className="list-none space-y-1">
+                        <ul className="list-none space-y-1 pl-0">
                           <li><strong>Reino:</strong> {species.taxonomy.kingdom}</li>
                           <li><strong>Filo:</strong> {species.taxonomy.phylum}</li>
                           <li><strong>Clase:</strong> {species.taxonomy.class}</li>
@@ -163,35 +171,25 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                 
                 <TabsContent value="eco">
                   <div className="space-y-6">
-                    <Section title="Hábitat" icon={<Globe className="h-6 w-6"/>}>
+                    <Section title="Hábitat y Rol Ecológico" icon={<Globe className="h-6 w-6"/>}>
                       <p>{species.characteristics.habitat}</p>
                     </Section>
-                    <Section title="Distribución Geográfica" icon={<Globe className="h-6 w-6"/>}>
+                    <Section title="Distribución Geográfica" icon={<Map className="h-6 w-6"/>}>
                       <p>{species.geographicDistribution}</p>
                     </Section>
-                    {species.characteristics.diet && (
-                       <Section title="Alimentación" icon={<Sprout className="h-6 w-6"/>}>
-                        <p>{species.characteristics.diet}</p>
-                      </Section>
-                    )}
-                    <Section title="Comportamiento y Ecología" icon={<Users className="h-6 w-6"/>}>
-                       <p>{species.behaviorAndEcology}</p>
-                    </Section>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="extra">
-                  <div className="space-y-6">
-                    <Section title="Estado de Conservación" icon={<ShieldCheck className="h-6 w-6"/>}>
+                     <Section title="Estado de Conservación" icon={<ShieldCheck className="h-6 w-6"/>}>
                       <p className="font-semibold text-foreground/90">{species.conservationStatus}</p>
                     </Section>
-
                     {species.threats && (
                       <Section title="Amenazas" icon={<TriangleAlert className="h-6 w-6"/>}>
                         <p>{species.threats}</p>
                       </Section>
                     )}
+                  </div>
+                </TabsContent>
 
+                <TabsContent value="extra">
+                  <div className="space-y-6">
                     {species.humanUses && (
                       <Section title="Usos Humanos" icon={<Users className="h-6 w-6"/>}>
                         <p>{species.humanUses}</p>
@@ -213,7 +211,7 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                     )}
 
                     <div>
-                       <h3 className="font-headline text-xl font-bold text-primary mb-3">Confianza del Análisis General</h3>
+                       <h3 className="font-headline text-xl font-bold text-primary mb-3 flex items-center gap-3"><BrainCircuit className="h-6 w-6" />Confianza del Análisis General</h3>
                       <Badge variant={getConfidenceVariant(species.confidence)}>
                         {confidencePercentage}%
                       </Badge>

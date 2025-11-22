@@ -100,6 +100,7 @@ const identifySpeciesPrompt = ai.definePrompt({
 3.  **Confianza Detallada:** Además de la confianza general, proporciona una estimación de confianza para cada nivel taxonómico. Si estás muy seguro de que es un 'Animal' pero no tanto del 'Género', refléjalo en los valores de 'taxonomyConfidence'. La confianza a nivel de especie debe ser la misma que la confianza general.
 4.  **Rigor y Detalle:** Ve más allá de lo básico. En 'physicalDescription', no digas solo "es verde"; describe el tono, la textura, la forma de las hojas. En 'geographicDistribution', menciona continentes, países y ecorregiones. En 'lifeCycle', describe las etapas de desarrollo.
 5.  **Lenguaje Atractivo:** Usa un lenguaje que sea a la vez preciso y cautivador. El objetivo es educar y fascinar.
+6.  **Curiosidades:** Incluye una lista de 3 a 5 hechos sorprendentes y poco conocidos en el campo 'interestingFacts'.
 
 **Ubicación del avistamiento:** {{location}}
 **Imagen para analizar:** {{media url=photoDataUri}}
