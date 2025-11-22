@@ -56,11 +56,15 @@ const IdentifySpeciesFromImageOutputSchema = z.object({
   
   physicalDescription: z.string().describe('Un análisis detallado de las características físicas: tamaño, color, forma de las hojas, tipo de flor, pelaje, marcas distintivas, etc.'),
 
+  distinctiveFeatures: z.string().describe('Un resumen de las características más distintivas y clave para la identificación rápida de la especie.'),
+
   characteristics: z.object({
     habitat: z.string().describe('El hábitat natural y los ecosistemas específicos donde se encuentra la especie.'),
     diet: z.string().optional().describe('La dieta principal de la especie (si aplica, para animales) o requerimientos nutricionales (para plantas/hongos).'),
     size: z.string().describe('El rango de tamaño promedio de la especie (altura, longitud, envergadura, etc.).'),
   }).describe('Características clave de la especie.'),
+
+  lifeCycle: z.string().describe('Una descripción del ciclo de vida de la especie, desde el nacimiento/germinación hasta la reproducción y la muerte.'),
 
   behaviorAndEcology: z.string().describe('Descripción del comportamiento (social, reproductivo, migratorio) y su rol ecológico (polinizador, presa, depredador, descomponedor).'),
 
@@ -94,7 +98,7 @@ const identifySpeciesPrompt = ai.definePrompt({
 1.  **Análisis Exhaustivo:** Analiza la imagen minuciosamente. Si se proporciona ubicación, úsala para acotar la identificación.
 2.  **Estructura Perfecta:** Debes rellenar TODOS los campos del esquema de salida. La información debe ser rigurosa, detallada, y estar perfectamente estructurada. No dejes campos vacíos a menos que sean opcionales y realmente no aplique (ej. 'dieta' para una roca).
 3.  **Confianza Detallada:** Además de la confianza general, proporciona una estimación de confianza para cada nivel taxonómico. Si estás muy seguro de que es un 'Animal' pero no tanto del 'Género', refléjalo en los valores de 'taxonomyConfidence'. La confianza a nivel de especie debe ser la misma que la confianza general.
-4.  **Rigor y Detalle:** Ve más allá de lo básico. En 'physicalDescription', no digas solo "es verde"; describe el tono, la textura, la forma de las hojas. En 'geographicDistribution', menciona continentes, países y ecorregiones.
+4.  **Rigor y Detalle:** Ve más allá de lo básico. En 'physicalDescription', no digas solo "es verde"; describe el tono, la textura, la forma de las hojas. En 'geographicDistribution', menciona continentes, países y ecorregiones. En 'lifeCycle', describe las etapas de desarrollo.
 5.  **Lenguaje Atractivo:** Usa un lenguaje que sea a la vez preciso y cautivador. El objetivo es educar y fascinar.
 
 **Ubicación del avistamiento:** {{location}}

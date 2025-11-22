@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert } from "lucide-react";
+import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert, Dna, Recycle, Target } from "lucide-react";
 import type { IdentifySpeciesFromImageOutput } from "@/ai/flows/identify-species-from-image";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -90,11 +90,12 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
 
       <CardContent className="p-0">
         <Tabs defaultValue="info" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 rounded-none h-16 bg-muted/30">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 rounded-none h-16 bg-muted/30">
             <TabsTrigger value="info" className="h-full rounded-none text-xs sm:text-sm"><Info className="h-5 w-5 mr-2 hidden sm:inline-block"/>General</TabsTrigger>
-            <TabsTrigger value="taxonomy" className="h-full rounded-none text-xs sm:text-sm"><Microscope className="h-5 w-5 mr-2 hidden sm:inline-block"/>Taxonomía</TabsTrigger>
+            <TabsTrigger value="biology" className="h-full rounded-none text-xs sm:text-sm"><Dna className="h-5 w-5 mr-2 hidden sm:inline-block"/>Biología</TabsTrigger>
             <TabsTrigger value="eco" className="h-full rounded-none text-xs sm:text-sm"><Leaf className="h-5 w-5 mr-2 hidden sm:inline-block"/>Ecología</TabsTrigger>
-            <TabsTrigger value="extra" className="h-full rounded-none text-xs sm-text-sm"><Sparkles className="h-5 w-5 mr-2 hidden sm:inline-block"/>Extras</TabsTrigger>
+            <TabsTrigger value="taxonomy" className="h-full rounded-none text-xs sm:text-sm"><Microscope className="h-5 w-5 mr-2 hidden sm:inline-block"/>Taxonomía</TabsTrigger>
+            <TabsTrigger value="extra" className="h-full rounded-none text-xs sm:text-sm"><Sparkles className="h-5 w-5 mr-2 hidden sm:inline-block"/>Extras</TabsTrigger>
           </TabsList>
           
           <div className="p-6">
@@ -107,6 +108,17 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                     </Section>
                     <Section title="Descripción Física" icon={<Sprout className="h-6 w-6"/>}>
                       {species.physicalDescription}
+                    </Section>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="biology">
+                  <div className="space-y-6">
+                     <Section title="Ciclo de Vida" icon={<Recycle className="h-6 w-6"/>}>
+                      {species.lifeCycle}
+                    </Section>
+                    <Section title="Características Distintivas" icon={<Target className="h-6 w-6"/>}>
+                      {species.distinctiveFeatures}
                     </Section>
                   </div>
                 </TabsContent>
