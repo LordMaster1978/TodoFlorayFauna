@@ -68,7 +68,7 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
   ];
 
   const sunlightChartData = species.plantCare ? [
-    { name: "Nivel de Luz", value: species.plantCare.sunlight, fill: "hsl(var(--primary))" },
+    { name: "Luz", value: species.plantCare.sunlight, fill: "hsl(var(--primary))" },
   ] : [];
 
   const chartConfig = {
@@ -84,9 +84,9 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
       label: "Max (cm)",
       color: "hsl(var(--chart-1))",
     },
-    sunlight: {
+    value: {
       label: "Nivel de Luz",
-      color: "hsl(var(--chart-1))",
+      color: "hsl(var(--primary))",
     }
   } satisfies ChartConfig;
 
@@ -191,7 +191,7 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                         <Section title="Fertilizante" icon={<Leaf className="h-6 w-6"/>}>
                           <p>{species.plantCare.fertilizer}</p>
                         </Section>
-                        <Section title="Humedad" icon={<Sparkles className="h-6 w-6"/>}>
+                         <Section title="Humedad" icon={<Sparkles className="h-6 w-6"/>}>
                           <p>{species.plantCare.humidity}</p>
                         </Section>
                       </div>
@@ -201,7 +201,7 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                           <div className="w-full h-40 mt-4">
                             <ChartContainer
                               config={chartConfig}
-                              className="w-full h-full"
+                              className="w-full h-full aspect-square max-h-[250px]"
                             >
                              <ResponsiveContainer>
                                 <RadialBarChart 
@@ -210,17 +210,18 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                                   endAngle={90} 
                                   innerRadius="70%" 
                                   outerRadius="110%"
+                                  barSize={20}
                                 >
                                   <PolarGrid
                                     gridType="circle"
-                                    radialLines={true}
+                                    radialLines={false}
                                     stroke="none"
                                     className="first:fill-muted last:fill-background"
-                                    polarRadius={[10, 20, 40, 70]}
+                                    polarRadius={[10, 20, 40, 70, 95]}
                                   />
-                                  <ChartTooltip
+                                   <ChartTooltip
                                     cursor={false}
-                                    content={<ChartTooltipContent hideLabel />}
+                                    content={<ChartTooltipContent hideLabel indicator="line" nameKey="name" />}
                                   />
                                   <RadialBar 
                                     dataKey="value" 
@@ -335,3 +336,5 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
     </Card>
   );
 }
+
+    
