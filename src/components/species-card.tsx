@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert, Dna, Recycle, Target, BookOpen, TreeDeciduous, Footprints, Map, Ruler, Sun, Droplets, Layers, Scissors } from "lucide-react";
+import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert, Dna, Recycle, Target, BookOpen, TreeDeciduous, Footprints, Map, Ruler, Sun, Droplets, Layers, Scissors, Flower2, GitBranchPlus } from "lucide-react";
 import type { IdentifySpeciesFromImageOutput } from "@/ai/flows/identify-species-from-image";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -177,7 +177,7 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
 
                 {species.plantCare && (
                   <TabsContent value="care" className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-8 items-start">
+                    <div className="grid md:grid-cols-2 gap-x-8 gap-y-6 items-start">
                       <div className="space-y-6">
                         <Section title="Riego" icon={<Droplets className="h-6 w-6"/>}>
                           <p>{species.plantCare.watering}</p>
@@ -185,11 +185,14 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                         <Section title="Suelo" icon={<Layers className="h-6 w-6" />}>
                           <p>{species.plantCare.soil}</p>
                         </Section>
-                        <Section title="Poda" icon={<Scissors className="h-6 w-6"/>}>
+                         <Section title="Poda" icon={<Scissors className="h-6 w-6"/>}>
                           <p>{species.plantCare.pruning}</p>
                         </Section>
                         <Section title="Fertilizante" icon={<Leaf className="h-6 w-6"/>}>
                           <p>{species.plantCare.fertilizer}</p>
+                        </Section>
+                        <Section title="Humedad" icon={<Sparkles className="h-6 w-6"/>}>
+                          <p>{species.plantCare.humidity}</p>
                         </Section>
                       </div>
                       <div className="space-y-6">
@@ -230,8 +233,11 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                             </ChartContainer>
                           </div>
                         </Section>
-                        <Section title="Humedad" icon={<Sparkles className="h-6 w-6"/>}>
-                          <p>{species.plantCare.humidity}</p>
+                        <Section title="Floración" icon={<Flower2 className="h-6 w-6"/>}>
+                          <p>{species.plantCare.floweringSeason}</p>
+                        </Section>
+                        <Section title="Reproducción" icon={<GitBranchPlus className="h-6 w-6"/>}>
+                          <p>{species.plantCare.reproduction}</p>
                         </Section>
                       </div>
                     </div>

@@ -91,8 +91,10 @@ const IdentifySpeciesFromImageOutputSchema = z.object({
     sunlight: z.number().min(0).max(10).describe("Nivel de luz ideal en una escala de 0 (sombra total) a 10 (sol directo pleno)."),
     soil: z.string().describe("Descripción del tipo de suelo, pH y drenaje preferido."),
     fertilizer: z.string().describe("Información sobre la fertilización: tipo, frecuencia y estacionalidad."),
-    pruning: z.string().describe("Consejos sobre poda, incluyendo cuándo y cómo hacerlo."),
+    pruning: z.string().describe("Consejos sobre poda, incluyendo cuándo (época del año) y cómo hacerlo para fomentar el crecimiento o la floración."),
     humidity: z.string().describe("Necesidades de humedad ambiental."),
+    floweringSeason: z.string().describe("Descripción de la época de floración, características de las flores (color, forma, aroma) y si es una planta que florece."),
+    reproduction: z.string().describe("Guía detallada sobre los métodos de reproducción de la planta, como por esquejes, semillas, división de mata, etc."),
   }).optional().describe("Guía de cuidados detallada, SÓLO si la especie es una planta."),
 });
 
@@ -115,7 +117,7 @@ const identifySpeciesPrompt = ai.definePrompt({
 3.  **Datos Numéricos para Gráficos:**
     - Para el tamaño (\`size\`), además de la descripción textual, proporciona los valores \`minCm\` y \`maxCm\` en centímetros. Si es un rango, proporciona ambos. Si es un tamaño aproximado, pon el mismo valor en ambos.
     - **Si es una PLANTA**, para la luz solar (\`sunlight\`), además de la descripción textual, proporciona un valor numérico de 0 a 10, donde 0 es sombra total, 5 es luz indirecta brillante, y 10 es sol directo todo el día.
-4.  **Guía de Cuidados para Plantas:** SI Y SOLO SI la especie es una planta (\`speciesType: 'plant'\`), debes rellenar COMPLETAMENTE el objeto \`plantCare\`. Proporciona información práctica y detallada para cada campo (riego, suelo, luz, etc.). Si no es una planta, este campo debe omitirse.
+4.  **Guía de Cuidados para Plantas:** SI Y SOLO SI la especie es una planta (\`speciesType: 'plant'\`), debes rellenar COMPLETAMENTE el objeto \`plantCare\`. Proporciona información práctica y detallada para cada campo, incluyendo época y método de **poda**, descripción de la **floración** y métodos de **reproducción** (semillas, esquejes, etc.). Si no es una planta, este campo debe omitirse.
 5.  **Confianza Detallada:** Además de la confianza general, proporciona una estimación de confianza para cada nivel taxonómico. Si estás muy seguro de que es un 'Animal' pero no tanto del 'Género', refléjalo en los valores de 'taxonomyConfidence'. La confianza a nivel de especie debe ser la misma que la confianza general.
 6.  **Rigor y Detalle:** Ve más allá de lo básico. En 'physicalDescription', describe el tono, la textura, la forma de las hojas. En 'geographicDistribution', menciona continentes, países y ecorregiones. En 'lifeCycle', describe las etapas de desarrollo.
 7.  **Lenguaje Atractivo:** Usa un lenguaje que sea a la vez preciso y cautivador. El objetivo es educar y fascinar.
