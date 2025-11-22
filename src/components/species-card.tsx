@@ -3,18 +3,22 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert, Dna, Recycle, Target, BookOpen, TreeDeciduous, Footprints, Map } from "lucide-react";
+import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert, Dna, Recycle, Target, BookOpen, TreeDeciduous, Footprints, Map, Ruler } from "lucide-react";
 import type { IdentifySpeciesFromImageOutput } from "@/ai/flows/identify-species-from-image";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  Bar,
+  BarChart,
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
   Radar,
   RadarChart,
   ResponsiveContainer,
+  XAxis,
+  YAxis,
 } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
@@ -56,13 +60,26 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
     { level: 'Género', confidence: species.taxonomyConfidence.genus, fullMark: 1 },
     { level: 'Especie', confidence: species.taxonomyConfidence.species, fullMark: 1 },
   ];
+  
+  const sizeChartData = [
+    { label: "Tamaño", min: species.characteristics.size.minCm || 0, max: species.characteristics.size.maxCm || species.characteristics.size.minCm || 0 }
+  ];
 
   const chartConfig = {
     confidence: {
       label: "Confianza",
       color: "hsl(var(--primary))",
     },
+    min: {
+      label: "Min (cm)",
+      color: "hsl(var(--chart-2))",
+    },
+    max: {
+      label: "Max (cm)",
+      color: "hsl(var(--chart-1))",
+    },
   } satisfies ChartConfig;
+
 
   return (
     <Card className="w-full animate-in fade-in-50 duration-500 overflow-hidden">
@@ -114,6 +131,24 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
                 </TabsContent>
 
                 <TabsContent value="biology" className="space-y-6">
+                  <Section title="Tamaño" icon={<Ruler className="h-6 w-6" />}>
+                     <p>{species.characteristics.size.description}</p>
+                     {(species.characteristics.size.minCm || species.characteristics.size.maxCm) && (
+                       <div className="w-full h-24 mt-4">
+                         <ChartContainer config={chartConfig} className="w-full h-full">
+                           <ResponsiveContainer>
+                             <BarChart data={sizeChartData} layout="vertical" margin={{ left: 10, right: 30 }}>
+                               <XAxis type="number" hide />
+                               <YAxis type="category" dataKey="label" hide />
+                               <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
+                               <Bar dataKey="max" fill="var(--color-max)" radius={5} />
+                               <Bar dataKey="min" fill="var(--color-min)" radius={5} />
+                             </BarChart>
+                           </ResponsiveContainer>
+                         </ChartContainer>
+                       </div>
+                     )}
+                   </Section>
                    <Section title="Ciclo de Vida" icon={<Recycle className="h-6 w-6"/>}>
                     {species.lifeCycle}
                   </Section>

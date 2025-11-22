@@ -61,7 +61,11 @@ const IdentifySpeciesFromImageOutputSchema = z.object({
   characteristics: z.object({
     habitat: z.string().describe('El hábitat natural y los ecosistemas específicos donde se encuentra la especie.'),
     diet: z.string().optional().describe('La dieta principal de la especie (si aplica, para animales) o requerimientos nutricionales (para plantas/hongos).'),
-    size: z.string().describe('El rango de tamaño promedio de la especie (altura, longitud, envergadura, etc.).'),
+    size: z.object({
+      description: z.string().describe('El rango de tamaño promedio de la especie (altura, longitud, envergadura, etc.) en texto descriptivo.'),
+      minCm: z.number().optional().describe('El tamaño mínimo del especimen en centímetros.'),
+      maxCm: z.number().optional().describe('El tamaño máximo del especimen en centímetros.'),
+    }),
   }).describe('Características clave de la especie.'),
 
   lifeCycle: z.string().describe('Una descripción del ciclo de vida de la especie, desde el nacimiento/germinación hasta la reproducción y la muerte.'),
@@ -97,10 +101,11 @@ const identifySpeciesPrompt = ai.definePrompt({
 **Instrucciones Clave:**
 1.  **Análisis Exhaustivo:** Analiza la imagen minuciosamente. Si se proporciona ubicación, úsala para acotar la identificación.
 2.  **Estructura Perfecta:** Debes rellenar TODOS los campos del esquema de salida. La información debe ser rigurosa, detallada, y estar perfectamente estructurada. No dejes campos vacíos a menos que sean opcionales y realmente no aplique (ej. 'dieta' para una roca).
-3.  **Confianza Detallada:** Además de la confianza general, proporciona una estimación de confianza para cada nivel taxonómico. Si estás muy seguro de que es un 'Animal' pero no tanto del 'Género', refléjalo en los valores de 'taxonomyConfidence'. La confianza a nivel de especie debe ser la misma que la confianza general.
-4.  **Rigor y Detalle:** Ve más allá de lo básico. En 'physicalDescription', no digas solo "es verde"; describe el tono, la textura, la forma de las hojas. En 'geographicDistribution', menciona continentes, países y ecorregiones. En 'lifeCycle', describe las etapas de desarrollo.
-5.  **Lenguaje Atractivo:** Usa un lenguaje que sea a la vez preciso y cautivador. El objetivo es educar y fascinar.
-6.  **Curiosidades:** Incluye una lista de 3 a 5 hechos sorprendentes y poco conocidos en el campo 'interestingFacts'.
+3.  **Datos Numéricos para Gráficos:** Para el tamaño (`size`), además de la descripción textual, proporciona los valores `minCm` y `maxCm` en centímetros. Si es un rango, proporciona ambos. Si es un tamaño aproximado, pon el mismo valor en ambos.
+4.  **Confianza Detallada:** Además de la confianza general, proporciona una estimación de confianza para cada nivel taxonómico. Si estás muy seguro de que es un 'Animal' pero no tanto del 'Género', refléjalo en los valores de 'taxonomyConfidence'. La confianza a nivel de especie debe ser la misma que la confianza general.
+5.  **Rigor y Detalle:** Ve más allá de lo básico. En 'physicalDescription', no digas solo "es verde"; describe el tono, la textura, la forma de las hojas. En 'geographicDistribution', menciona continentes, países y ecorregiones. En 'lifeCycle', describe las etapas de desarrollo.
+6.  **Lenguaje Atractivo:** Usa un lenguaje que sea a la vez preciso y cautivador. El objetivo es educar y fascinar.
+7.  **Curiosidades:** Incluye una lista de 3 a 5 hechos sorprendentes y poco conocidos en el campo 'interestingFacts'.
 
 **Ubicación del avistamiento:** {{location}}
 **Imagen para analizar:** {{media url=photoDataUri}}
