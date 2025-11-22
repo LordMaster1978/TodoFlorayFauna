@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert, Dna, Recycle, Target, BookOpen, TreeDeciduous, Footprints } from "lucide-react";
+import { Star, Leaf, Globe, ShieldCheck, Info, Sparkles, BrainCircuit, Microscope, Users, Sprout, TriangleAlert, Dna, Recycle, Target, BookOpen, TreeDeciduous, Footprints, Map } from "lucide-react";
 import type { IdentifySpeciesFromImageOutput } from "@/ai/flows/identify-species-from-image";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -101,124 +101,114 @@ export function SpeciesCard({ species, image, isFavorite, onToggleFavorite }: Sp
           <div className="p-6">
             <ScrollArea className="h-[450px] w-full">
               <div className="pr-6 space-y-8">
-                <TabsContent value="info">
-                  <div className="space-y-6">
-                    <Section title="Descripción General" icon={<Info className="h-6 w-6"/>}>
-                      {species.description}
-                    </Section>
-                    <Section title="Descripción Física" icon={<Sprout className="h-6 w-6"/>}>
-                      {species.physicalDescription}
-                    </Section>
-                     <Section title="Características Distintivas" icon={<Target className="h-6 w-6"/>}>
-                      {species.distinctiveFeatures}
-                    </Section>
-                  </div>
+                <TabsContent value="info" className="space-y-6">
+                  <Section title="Descripción General" icon={<Info className="h-6 w-6"/>}>
+                    {species.description}
+                  </Section>
+                  <Section title="Descripción Física" icon={<Sprout className="h-6 w-6"/>}>
+                    {species.physicalDescription}
+                  </Section>
+                   <Section title="Características Distintivas" icon={<Target className="h-6 w-6"/>}>
+                    {species.distinctiveFeatures}
+                  </Section>
                 </TabsContent>
 
-                <TabsContent value="biology">
-                  <div className="space-y-6">
-                     <Section title="Ciclo de Vida" icon={<Recycle className="h-6 w-6"/>}>
-                      {species.lifeCycle}
+                <TabsContent value="biology" className="space-y-6">
+                   <Section title="Ciclo de Vida" icon={<Recycle className="h-6 w-6"/>}>
+                    {species.lifeCycle}
+                  </Section>
+                   {species.characteristics.diet && (
+                     <Section title="Alimentación" icon={<Leaf className="h-6 w-6"/>}>
+                      <p>{species.characteristics.diet}</p>
                     </Section>
-                     {species.characteristics.diet && (
-                       <Section title="Alimentación" icon={<Leaf className="h-6 w-6"/>}>
-                        <p>{species.characteristics.diet}</p>
-                      </Section>
-                    )}
-                     <Section title="Comportamiento" icon={<Footprints className="h-6 w-6"/>}>
-                       <p>{species.behaviorAndEcology}</p>
-                    </Section>
-                  </div>
+                  )}
+                   <Section title="Comportamiento" icon={<Footprints className="h-6 w-6"/>}>
+                     <p>{species.behaviorAndEcology}</p>
+                  </Section>
                 </TabsContent>
 
-                <TabsContent value="taxonomy">
-                    <div className="space-y-6">
-                      <Section title="Clasificación Taxonómica" icon={<Microscope className="h-6 w-6"/>}>
-                        <ul className="list-none space-y-1 pl-0">
-                          <li><strong>Reino:</strong> {species.taxonomy.kingdom}</li>
-                          <li><strong>Filo:</strong> {species.taxonomy.phylum}</li>
-                          <li><strong>Clase:</strong> {species.taxonomy.class}</li>
-                          <li><strong>Orden:</strong> {species.taxonomy.order}</li>
-                          <li><strong>Familia:</strong> {species.taxonomy.family}</li>
-                          <li><strong>Género:</strong> <em>{species.taxonomy.genus}</em></li>
-                          <li><strong>Especie:</strong> <em>{species.taxonomy.species}</em></li>
-                        </ul>
-                      </Section>
-                      <Section title="Confianza Taxonómica de la IA" icon={<BrainCircuit className="h-6 w-6"/>}>
-                         <p>Este gráfico muestra qué tan segura está la IA en su clasificación en cada nivel taxonómico.</p>
-                         <div className="w-full h-80">
-                           <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
-                            <ResponsiveContainer>
-                              <RadarChart data={taxonomyConfidenceData} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-                                <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
-                                <PolarAngleAxis dataKey="level" tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} />
-                                <PolarRadiusAxis angle={30} domain={[0, 1]} tick={false} axisLine={false} />
-                                <PolarGrid />
-                                <Radar
-                                  name="Confianza"
-                                  dataKey="confidence"
-                                  stroke="hsl(var(--primary))"
-                                  fill="hsl(var(--primary))"
-                                  fillOpacity={0.6}
-                                />
-                              </RadarChart>
-                              </ResponsiveContainer>
-                           </ChartContainer>
-                         </div>
-                      </Section>
-                    </div>
+                <TabsContent value="taxonomy" className="space-y-6">
+                  <Section title="Clasificación Taxonómica" icon={<Microscope className="h-6 w-6"/>}>
+                    <ul className="list-none space-y-1 pl-0">
+                      <li><strong>Reino:</strong> {species.taxonomy.kingdom}</li>
+                      <li><strong>Filo:</strong> {species.taxonomy.phylum}</li>
+                      <li><strong>Clase:</strong> {species.taxonomy.class}</li>
+                      <li><strong>Orden:</strong> {species.taxonomy.order}</li>
+                      <li><strong>Familia:</strong> {species.taxonomy.family}</li>
+                      <li><strong>Género:</strong> <em>{species.taxonomy.genus}</em></li>
+                      <li><strong>Especie:</strong> <em>{species.taxonomy.species}</em></li>
+                    </ul>
+                  </Section>
+                  <Section title="Confianza Taxonómica de la IA" icon={<BrainCircuit className="h-6 w-6"/>}>
+                     <p>Este gráfico muestra qué tan segura está la IA en su clasificación en cada nivel taxonómico.</p>
+                     <div className="w-full h-80">
+                       <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
+                        <ResponsiveContainer>
+                          <RadarChart data={taxonomyConfidenceData} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+                            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
+                            <PolarAngleAxis dataKey="level" tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} />
+                            <PolarRadiusAxis angle={30} domain={[0, 1]} tick={false} axisLine={false} />
+                            <PolarGrid />
+                            <Radar
+                              name="Confianza"
+                              dataKey="confidence"
+                              stroke="hsl(var(--primary))"
+                              fill="hsl(var(--primary))"
+                              fillOpacity={0.6}
+                            />
+                          </RadarChart>
+                          </ResponsiveContainer>
+                       </ChartContainer>
+                     </div>
+                  </Section>
                 </TabsContent>
                 
-                <TabsContent value="eco">
-                  <div className="space-y-6">
-                    <Section title="Hábitat y Rol Ecológico" icon={<Globe className="h-6 w-6"/>}>
-                      <p>{species.characteristics.habitat}</p>
+                <TabsContent value="eco" className="space-y-6">
+                  <Section title="Hábitat y Rol Ecológico" icon={<Globe className="h-6 w-6"/>}>
+                    <p>{species.characteristics.habitat}</p>
+                  </Section>
+                  <Section title="Distribución Geográfica" icon={<Map className="h-6 w-6"/>}>
+                    <p>{species.geographicDistribution}</p>
+                  </Section>
+                   <Section title="Estado de Conservación" icon={<ShieldCheck className="h-6 w-6"/>}>
+                    <p className="font-semibold text-foreground/90">{species.conservationStatus}</p>
+                  </Section>
+                  {species.threats && (
+                    <Section title="Amenazas" icon={<TriangleAlert className="h-6 w-6"/>}>
+                      <p>{species.threats}</p>
                     </Section>
-                    <Section title="Distribución Geográfica" icon={<Map className="h-6 w-6"/>}>
-                      <p>{species.geographicDistribution}</p>
-                    </Section>
-                     <Section title="Estado de Conservación" icon={<ShieldCheck className="h-6 w-6"/>}>
-                      <p className="font-semibold text-foreground/90">{species.conservationStatus}</p>
-                    </Section>
-                    {species.threats && (
-                      <Section title="Amenazas" icon={<TriangleAlert className="h-6 w-6"/>}>
-                        <p>{species.threats}</p>
-                      </Section>
-                    )}
-                  </div>
+                  )}
                 </TabsContent>
 
-                <TabsContent value="extra">
-                  <div className="space-y-6">
-                    {species.humanUses && (
-                      <Section title="Usos Humanos" icon={<Users className="h-6 w-6"/>}>
-                        <p>{species.humanUses}</p>
-                      </Section>
-                    )}
-                    
-                    <Section title="Curiosidades" icon={<Sparkles className="h-6 w-6"/>}>
-                      <ul className="list-disc list-inside space-y-2">
-                        {species.interestingFacts.map((fact, index) => (
-                          <li key={index}>{fact}</li>
-                        ))}
-                      </ul>
+                <TabsContent value="extra" className="space-y-6">
+                  {species.humanUses && (
+                    <Section title="Usos Humanos" icon={<Users className="h-6 w-6"/>}>
+                      <p>{species.humanUses}</p>
                     </Section>
-                    
-                    {species.similarSpecies && (
-                      <Section title="Especies Similares" icon={<Users className="h-6 w-6"/>}>
-                          <p>{species.similarSpecies}</p>
-                      </Section>
-                    )}
+                  )}
+                  
+                  <Section title="Curiosidades" icon={<Sparkles className="h-6 w-6"/>}>
+                    <ul className="list-disc list-inside space-y-2">
+                      {species.interestingFacts.map((fact, index) => (
+                        <li key={index}>{fact}</li>
+                      ))}
+                    </ul>
+                  </Section>
+                  
+                  {species.similarSpecies && (
+                    <Section title="Especies Similares" icon={<Users className="h-6 w-6"/>}>
+                        <p>{species.similarSpecies}</p>
+                    </Section>
+                  )}
 
-                    <div>
-                       <h3 className="font-headline text-xl font-bold text-primary mb-3 flex items-center gap-3"><BrainCircuit className="h-6 w-6" />Confianza del Análisis General</h3>
-                      <Badge variant={getConfidenceVariant(species.confidence)}>
-                        {confidencePercentage}%
-                      </Badge>
-                       <p className="text-xs text-muted-foreground mt-1">Nivel de confianza de la IA en esta identificación.</p>
-                    </div>
-
+                  <div>
+                     <h3 className="font-headline text-xl font-bold text-primary mb-3 flex items-center gap-3"><BrainCircuit className="h-6 w-6" />Confianza del Análisis General</h3>
+                    <Badge variant={getConfidenceVariant(species.confidence)}>
+                      {confidencePercentage}%
+                    </Badge>
+                     <p className="text-xs text-muted-foreground mt-1">Nivel de confianza de la IA en esta identificación.</p>
                   </div>
+
                 </TabsContent>
               </div>
             </ScrollArea>
