@@ -93,7 +93,7 @@ export default function Home() {
         </section>
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground border-t">
-        <p>&copy; {new Date().getFullYear()} Todo Sobre Flora y Fauna. Creado con ❤️ para exploradores de la naturaleza.</p>
+        <p>© 2025 Todo Sobre Flora y Fauna. Creado por Lord Master con ❤️ para exploradores de la naturaleza.</p>
       </footer>
     </div>
   );
