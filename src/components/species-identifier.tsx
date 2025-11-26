@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UploadCloud, Search, Loader2, AlertCircle, MapPin, Camera } from "lucide-react";
+import { UploadCloud, Search, Loader2, AlertCircle, MapPin, Camera, SwitchCamera } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import { SpeciesCard } from "./species-card";
@@ -32,6 +32,8 @@ export function SpeciesIdentifier() {
   const [isDragOver, setIsDragOver] = useState(false);
   const [activeTab, setActiveTab] = useState("file");
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [cameraDevices, setCameraDevices] = useState<MediaDeviceInfo[]>([]);
+  const [currentDeviceId, setCurrentDeviceId] = useState<string | undefined>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -70,27 +72,48 @@ export function SpeciesIdentifier() {
     }
   }, []);
 
+  const getCameraPermission = useCallback(async (deviceId?: string) => {
+    stopCamera();
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      setCameraDevices(videoDevices);
+
+      let selectedDeviceId = deviceId;
+
+      if (!deviceId) {
+        // Prefer rear camera
+        const rearCamera = videoDevices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('trasera'));
+        selectedDeviceId = rearCamera?.deviceId || videoDevices[0]?.deviceId;
+      }
+      
+      setCurrentDeviceId(selectedDeviceId);
+
+      const constraints: MediaStreamConstraints = {
+        video: selectedDeviceId ? { deviceId: { exact: selectedDeviceId } } : { facingMode: 'environment' }
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setHasCameraPermission(true);
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      setHasCameraPermission(false);
+      toast({
+        variant: 'destructive',
+        title: 'Acceso a la cámara denegado',
+        description: 'Por favor, habilita los permisos de la cámara en la configuración de tu navegador para usar esta aplicación.',
+      });
+      setActiveTab('file'); // Fallback to file upload
+    }
+  }, [stopCamera, toast]);
+
+
   useEffect(() => {
     if (activeTab === 'camera') {
-      const getCameraPermission = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          setHasCameraPermission(true);
-  
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-        } catch (error) {
-          console.error('Error accessing camera:', error);
-          setHasCameraPermission(false);
-          toast({
-            variant: 'destructive',
-            title: 'Acceso a la cámara denegado',
-            description: 'Por favor, habilita los permisos de la cámara en la configuración de tu navegador para usar esta aplicación.',
-          });
-          setActiveTab('file'); // Fallback to file upload
-        }
-      };
       getCameraPermission();
     } else {
       stopCamera();
@@ -99,7 +122,7 @@ export function SpeciesIdentifier() {
     return () => {
       stopCamera();
     };
-  }, [activeTab, toast, stopCamera]);
+  }, [activeTab, getCameraPermission, stopCamera]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -145,6 +168,16 @@ export function SpeciesIdentifier() {
         setError(null);
         setActiveTab("file"); // Switch back to see the preview
       }
+    }
+  };
+
+  const handleSwitchCamera = () => {
+    if (cameraDevices.length > 1) {
+      const currentIndex = cameraDevices.findIndex(device => device.deviceId === currentDeviceId);
+      const nextIndex = (currentIndex + 1) % cameraDevices.length;
+      const nextDevice = cameraDevices[nextIndex];
+      setCurrentDeviceId(nextDevice.deviceId);
+      getCameraPermission(nextDevice.deviceId);
     }
   };
 
@@ -281,6 +314,17 @@ export function SpeciesIdentifier() {
                   <Camera className="h-12 w-12 mx-auto mb-2"/>
                   <p>Esperando permiso de la cámara...</p>
                 </div>
+              )}
+               {cameraDevices.length > 1 && (
+                <Button 
+                  onClick={handleSwitchCamera} 
+                  variant="ghost" 
+                  size="icon" 
+                  className="absolute top-2 right-2 text-white bg-black/50 hover:bg-black/70 hover:text-white"
+                  aria-label="Cambiar cámara"
+                >
+                  <SwitchCamera className="h-6 w-6" />
+                </Button>
               )}
             </div>
             <canvas ref={canvasRef} className="hidden" />
