@@ -81,7 +81,7 @@ export function SpeciesIdentifier() {
 
       let selectedDeviceId = deviceId;
 
-      if (!deviceId) {
+      if (!deviceId && videoDevices.length > 0) {
         // Prefer rear camera
         const rearCamera = videoDevices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('trasera'));
         selectedDeviceId = rearCamera?.deviceId || videoDevices[0]?.deviceId;
@@ -176,8 +176,9 @@ export function SpeciesIdentifier() {
       const currentIndex = cameraDevices.findIndex(device => device.deviceId === currentDeviceId);
       const nextIndex = (currentIndex + 1) % cameraDevices.length;
       const nextDevice = cameraDevices[nextIndex];
-      setCurrentDeviceId(nextDevice.deviceId);
-      getCameraPermission(nextDevice.deviceId);
+      if (nextDevice) {
+        getCameraPermission(nextDevice.deviceId);
+      }
     }
   };
 
